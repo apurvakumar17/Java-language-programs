@@ -6,5 +6,6 @@ public class p5 {
         System.out.print("Enter your name: "); //Apurva Kumar
         String fullname = sc.nextLine();
         System.out.print(fullname); //Apurva Kumar
+        sc.close();
     }
 }

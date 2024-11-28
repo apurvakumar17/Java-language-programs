@@ -18,5 +18,6 @@ public class p8 {
                 System.out.print("Second number is greater");
             }
         }
+        sc.close();
     }
 }

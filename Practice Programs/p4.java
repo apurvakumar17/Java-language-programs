@@ -8,5 +8,6 @@ public class p4 {
         String name = sc.next(); //Apurva Kumar
         System.out.print("Your name is ");
         System.out.print(name); //Apurva
+        sc.close();
     }
 }

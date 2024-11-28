@@ -10,5 +10,6 @@ public class p6 {
         System.out.print("Sum is: ");
         int sum = a+b;
         System.out.print(sum);
+        sc.close();
     }
 }

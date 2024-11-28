@@ -10,5 +10,6 @@ public class p7 {
         } else {
             System.out.print("You are not Adult");
         }
+        sc.close();
     }
 }
