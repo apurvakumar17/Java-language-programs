@@ -10,7 +10,7 @@ public class p30 {
         int[][] arr2d = new int[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                System.out.print("Enter element (" + i + "," + j + ")"+": ");
+                System.out.print("Enter element (" + i + "," + j + ")" + ": ");
                 arr2d[i][j] = sc.nextInt();
             }
         }
