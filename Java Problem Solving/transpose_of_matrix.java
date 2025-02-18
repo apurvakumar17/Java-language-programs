@@ -3,7 +3,6 @@ import java.util.Scanner;
 public class transpose_of_matrix {
     public static void main(String args[]) {
         int i, j;
-        //only for square matrix currently :(
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter number of rows: ");
         i = sc.nextInt();
@@ -17,8 +16,8 @@ public class transpose_of_matrix {
                 mat[x][y] = sc.nextInt();
             }
         }
-        for (x = 0; x < i; x++) {
-            for (y = 0; y < j; y++) {
+        for (x = 0; x < j; x++) {
+            for (y = 0; y < i; y++) {
                 System.out.print(mat[y][x] + " ");
             }
             System.out.println();
