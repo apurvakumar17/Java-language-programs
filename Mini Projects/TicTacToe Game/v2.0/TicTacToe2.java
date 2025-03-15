@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.Objects;
 import java.util.Random;
 
-public class TicTacToe implements ActionListener {
+public class TicTacToe2 implements ActionListener {
 
     Random random = new Random();
     JFrame frame = new JFrame();
@@ -16,7 +16,7 @@ public class TicTacToe implements ActionListener {
     JButton[] buttons = new JButton[9];
     boolean player1_turn;
 
-    TicTacToe() {
+    TicTacToe2() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("TicTacToe");
         frame.setSize(500, 500);
@@ -67,45 +67,121 @@ public class TicTacToe implements ActionListener {
         
         for (int i = 0; i < 9; i++) {
             if (e.getSource() == buttons[i]) {
-                if (player1_turn) {
+                if (turn.equals("human")) {
                     if (Objects.equals(buttons[i].getText(), "")) {
                         buttons[i].setForeground(new Color(186, 26, 26));
                         buttons[i].setBackground(new Color(255, 218, 214));
-                        buttons[i].setText("X");
-                        player1_turn = false;
-                        textfield.setText("Player O turn");
+                        buttons[i].setText(human_sign);
+                        textfield.setText(bot_msg);
                         check();
                         tieCase();
-                    }
-                } else {
-                    if (Objects.equals(buttons[i].getText(), "")) {
-                        buttons[i].setForeground(new Color(29, 187, 27));
-                        buttons[i].setBackground(new Color(215, 255, 214));
-                        buttons[i].setText("O");
-                        player1_turn = true;
-                        textfield.setText("Player X turn");
-                        check();
-                        tieCase();
+                        turn = "bot";
+                        callBot();
                     }
                 }
             }
         }
     }
 
+    private void callBot() {
+        if (turn == "bot" && !gameOver) {
+            int move = -1;
+            if ((move = findWinningMove(bot_sign)) != -1) {
+                // Computer's winning move
+            } else if ((move = findWinningMove(human_sign)) != -1) {
+                // Block player's winning move
+            } else if ((move = takeCCS("center")) != -1) {
+                // Be Smart and take center
+            } else if ((move = takeCCS("corner")) != -1) {
+                // Be Smart and take corner
+            } else if ((move = takeCCS("side")) != -1) {
+                // Be Smart and take  side
+            }
+ 
+            if (move == -1) { // If no WinningMove, pick a random move
+                do {
+                    move = random.nextInt(9);
+                } while (!Objects.equals(buttons[move].getText(), ""));
+            }
+
+            buttons[move].setForeground(new Color(29, 187, 27));
+            buttons[move].setBackground(new Color(215, 255, 214));
+            buttons[move].setText(bot_sign);
+            textfield.setText(human_msg);
+            check();
+            tieCase();
+            turn = "human";
+        } 
+    }
+
+    public int takeCCS(String pos) {
+        if (pos.equals("center")) {
+            if (Objects.equals(buttons[4].getText(), "")) {
+                return 4;
+            } else {
+                return -1;
+            }
+        } else if (pos.equals("corner")) {
+            int[] boxes = {0, 2, 6, 8};
+            for (int i = 0; i < boxes.length; i++) {
+                if (Objects.equals(buttons[boxes[i]], "")) {
+                    return boxes[i];
+                }
+            }
+        } else if (pos.equals("side")) {
+            int[] boxes = {1, 3, 5, 7};
+            for (int i = 0; i < boxes.length; i++) {
+                if (Objects.equals(buttons[boxes[i]], "")) {
+                    return boxes[i];
+                }
+            }
+        }
+        return -1;
+        
+    }
+    public int findWinningMove(String player) {
+        int[][] winCases = {
+            {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // Rows
+            {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // Columns
+            {0, 4, 8}, {2, 4, 6}             // Diagonals
+        };
+    
+        for (int[] winCase : winCases) {
+            String first = buttons[winCase[0]].getText();
+            String second = buttons[winCase[1]].getText();
+            String third = buttons[winCase[2]].getText();
+    
+            // Check if two spots are occupied by the player and one is empty
+            if ((first.equals(player) && second.equals(player) && third.equals(""))) return winCase[2];
+            if ((first.equals(player) && third.equals(player) && second.equals(""))) return winCase[1];
+            if ((second.equals(player) && third.equals(player) && first.equals(""))) return winCase[0];
+        }
+    
+        return -1; // No WinningMovee found
+    }
+
+    private String human_sign;
+    private String bot_sign;
+    private String human_msg;
+    private String bot_msg;
+
+    private String turn = "human";
+
     public void firstTurn() {
 
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
         if (random.nextInt(2) == 0) {
-            player1_turn = true;
-            textfield.setText("Player X turn");
+            human_sign = "X";
+            bot_sign = "O";
+            human_msg = "Player X (You) turn";
+            bot_msg = "Player O (Bot) turn";
+            textfield.setText(human_msg);
         } else {
-            player1_turn = false;
-            textfield.setText("Player O turn");
+            human_sign = "O";
+            bot_sign = "X";
+            human_msg = "Player O (You) turn";
+            bot_msg = "Player X (Bot) turn";
+            textfield.setText(human_msg);
         }
     }
 
@@ -127,7 +203,7 @@ public class TicTacToe implements ActionListener {
                 (Objects.equals(buttons[winCases[i][1]].getText(), "X")) &&
                 (Objects.equals(buttons[winCases[i][2]].getText(), "X")))
             {
-                xWins(winCases[i][0], winCases[i][1], winCases[i][2]);
+                dWin(winCases[i][0], winCases[i][1], winCases[i][2]);
             }
         }
 
@@ -136,21 +212,16 @@ public class TicTacToe implements ActionListener {
                 (Objects.equals(buttons[winCases[i][1]].getText(), "O")) &&
                 (Objects.equals(buttons[winCases[i][2]].getText(), "O")))
             {
-                oWins(winCases[i][0], winCases[i][1], winCases[i][2]);
+                dWin(winCases[i][0], winCases[i][1], winCases[i][2]);
             }
         }
     }
 
-    public void xWins(int a, int b, int c) {
+    public void dWin(int a, int b, int c) {
         afterWin(a, b, c);
         tieAllow = false;
-        textfield.setText("Player X wins");
-    }
-
-    public void oWins(int a, int b, int c) {
-        afterWin(a, b, c);
-        tieAllow = false;
-        textfield.setText("Player O wins");
+        textfield.setText(winText);
+        gameOver = true;
     }
 
     public void tieCase() {
@@ -165,12 +236,20 @@ public class TicTacToe implements ActionListener {
                 buttons[i].setEnabled(false);
             }
             textfield.setText("Tie!!");
+            gameOver = true;
         }
 
 
     }
-
+    
+    private String winText;
+    
     private void afterWin(int a, int b, int c) {
+        if (Objects.equals(buttons[a].getText(), human_sign)) {
+            winText = "You win !!";
+        } else {
+            winText = "Bot won !!";
+        }
         buttons[a].setBackground(new Color(248, 226, 137));
         buttons[b].setBackground(new Color(248, 226, 137));
         buttons[c].setBackground(new Color(248, 226, 137));

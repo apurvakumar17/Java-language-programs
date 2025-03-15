@@ -5,11 +5,13 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class ChooseMode implements ActionListener {
+    private JFrame frame;
+     
     ChooseMode() {
         JPanel title_panel = new JPanel();
         JPanel button_panel = new JPanel(new GridBagLayout()); // Use GridBagLayout
 
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Choose Mode");
         frame.setSize(250, 250);
@@ -74,9 +76,12 @@ public class ChooseMode implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         mode = e.getActionCommand();
+        frame.dispose();
+        if(mode == "Player vs Player") {
+            new TicTacToe();
+        } else if(mode == "Bot vs Player") {
+            new TicTacToe2();
+        }
     }
 
-    public static void main(String[] args) {
-        new ChooseMode();
-    }
 }
