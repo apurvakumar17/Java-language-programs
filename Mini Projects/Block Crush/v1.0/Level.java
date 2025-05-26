@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -31,7 +32,7 @@ public class Level implements ActionListener {
     Level(String mode) {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Block Crush");
-        frame.setSize(500, 500);
+        frame.setSize(500, 550);
         frame.setLocationRelativeTo(null);
         frame.getContentPane().setBackground(new Color(50, 50, 50));
         frame.setLayout(new BorderLayout());
@@ -40,12 +41,21 @@ public class Level implements ActionListener {
         frame.setMinimumSize(new Dimension(minWidth, minHeight));
         frame.setVisible(true);
 
+        textfield.setBackground(new Color(214, 227, 255));
+        textfield.setForeground(new Color(40, 71, 119));
+        textfield.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
+        textfield.setHorizontalAlignment(JLabel.CENTER);
+        textfield.setText("Block Crush");
+        textfield.setOpaque(true);
+        textfield.setBorder(new EmptyBorder(5, 0, 5, 0));
+
         title_panel.setLayout(new BorderLayout());
-        title_panel.setBounds(0, 0, 500, 500);
+        title_panel.setBounds(0, 0, 500, 50);
 
         title_panel.add(textfield);
         frame.add(title_panel, BorderLayout.NORTH);
 
+        button_panel = new ImagePanel("background.jpg"); // your image path
         button_panel.setLayout(new GridLayout(10, 10));
         button_panel.setBackground(new Color(150, 150, 150));
 
@@ -68,8 +78,12 @@ public class Level implements ActionListener {
             buttons[i].setFont(new Font("Arial", Font.BOLD, 50));
             buttons[i].setFocusable(false);
             buttons[i].addActionListener(this);
+            // buttons[i].setBackground(new Color(218, 226, 249));
+            // buttons[i].setOpaque(false); // Makes background transparent
+            // buttons[i].setContentAreaFilled(true); // Prevents content background
+            // painting
+            // buttons[i].setBorderPainted(true);
             buttons[i].setBackground(new Color(218, 226, 249));
-
             BlockData blockData = randomBlockPNG();
             buttons[i].setIcon(blockData.icon);
             buttons[i].setActionCommand(blockData.name); // Store block type
@@ -78,6 +92,43 @@ public class Level implements ActionListener {
 
         checkCombinations();
         checkCombinations();
+
+        String targetTitle = giveTarget();
+        Timer changetimer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                textfield.setText(targetTitle);
+            }
+        });
+        changetimer.setRepeats(false);
+        changetimer.start();
+    }
+
+    String block1;
+    String block2;
+    Integer t1 = null;
+    Integer t2 = null;
+    Random randomt = new Random();
+
+    String fixNAME(String s) {
+        return s.substring(0, s.indexOf(".")).toUpperCase();
+    }
+    String giveTarget() {
+        if (t1 == null && t2 == null) {
+            block1 = fixNAME(filenames[randomt.nextInt(filenames.length)]);
+            block2 = block1;
+            while (block1.equals(block2)) {
+                block2 = fixNAME(filenames[randomt.nextInt(filenames.length)]);
+            }
+            t1 = 20 + randomt.nextInt(50);
+            t2 = 20 + randomt.nextInt(50);
+        }
+
+        if (t1 == 0 && t2 == 0) {
+            return "Wonderfull Level Complete!";
+        }
+        return "Your Target: " + block1 + ": " + t1 + " & " + block2 + ": " + t2;
+        
     }
 
     boolean checkCombinations() {
@@ -111,6 +162,20 @@ public class Level implements ActionListener {
 
     void fix(int[] combiButtons) {
         for (int j : combiButtons) {
+            String tempBlock = fixNAME(buttons[combiButtons[0]].getActionCommand());
+            if (tempBlock.equals(block1)) {
+                t1 = t1 - (combiButtons.length);
+                if (t1 < 0) {
+                    t1 = 0;
+                }
+            } else if (tempBlock.equals(block2)) {
+                t2 = t2 - (combiButtons.length);
+                if (t2 < 0) {
+                    t2 = 0;
+                }
+            }
+            String t12 = giveTarget();
+            textfield.setText(t12);
             BlockData blockData = randomBlockPNG();
             buttons[j].setIcon(blockData.icon);
             buttons[j].setActionCommand(blockData.name);
@@ -148,7 +213,6 @@ public class Level implements ActionListener {
                         });
                         swaptimer.setRepeats(false);
                         swaptimer.start();
-                        
 
                         onGoingSwap = false;
 
